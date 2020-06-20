@@ -8,6 +8,7 @@ use DB;
 use Auth;
 use App\Customer;
 use App\Payment;
+use App\Roter;
 use Illuminate\View\View;
 use DateTime;
 use DatePeriod;
@@ -79,7 +80,19 @@ class CustomerController extends Controller
         
 
         $customers = Customer::orderBy('id', 'DESC')->get();
+        
         return view('admin.customer.index',compact('customers'));
+    }
+
+   /**
+     * Download Customer Data
+     */
+
+    public function customer_data(){
+        $customers = Customer::orderBy('id', 'DESC')->get();
+
+        $pdf = PDF::loadView('admin.customer.index', $customers);
+        return $pdf->download('customer.pdf');
     }
 
     /**
@@ -90,7 +103,9 @@ class CustomerController extends Controller
     public function create()
     {
         
-        return view("admin.customer.create");
+        $routers = Roter::orderBy('id', 'DESC')->get();
+
+        return view("admin.customer.create",compact("routers"));
     }
 
     
@@ -163,6 +178,29 @@ class CustomerController extends Controller
         $note = $request->input('note');
         $nMonths = 1; // choose how many months you want to move ahead
         $final = $this->endCycle($reg_date, $nMonths); // output: 2014-07-02
+
+
+        // Check Router Availity 
+
+        $router = Roter::find($router_id);
+      if($router != null){
+        if($router->qty >= 1){
+            $router->qty =  $router->qty -1;
+            $router->sell = $router->sell + 1;
+            $router->update();
+        }else{
+            \Session::flash('message', 'Fail To Save  Data.Router is not available....... ');
+            return redirect()->back()->withInput()->withErrors($v);
+        }
+      }
+      
+
+
+
+
+
+
+
         /**
          * Check File is uploaded or not
          */
@@ -353,6 +391,7 @@ class CustomerController extends Controller
         if (Auth::user()->roll == 3){
        
             Customer::where('id', $id)->delete();
+            Payment::where('cust_id', $id)->delete();
             return redirect('/admin/customer/list');
         }else{
             return view("/admin/customer/create");

@@ -113,9 +113,11 @@ Add New Customer
                               <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
                               <select class="selectpicker form-control" name="router_id">
                                     <option value="0">Select Ruter</option>
-                                    <option value="1">Shop Pay</option>
-                                    <option value="2">Bank Pay</option>
-                                  <option value="3">Post Bank Pay</option>
+                                    @foreach ($routers as $router)
+                                        
+                                 
+                                    <option value="{{ $router->id }}">Name : {{ $router->name }} and  Model : {{ $router->model }}</option>
+                                    @endforeach
                     </select>
                            </div>
                         </div>

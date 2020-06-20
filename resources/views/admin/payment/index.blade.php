@@ -1,8 +1,19 @@
 @extends('admin.master')
 @section('content')
-
+@section('title')
+Payments
+@endsection
     
   <div class="container">
+      
+    @if (Session::has('message'))
+    <h2 class="alert alert-info" style="color: #28a745;">{!! session('message') !!}</h2>
+@endif
+      @if ( count( $errors ) > 0 )      
+            @foreach ($errors->all() as $error)
+        <h3  class="alert alert-danger" style="color:red">{{ $error }}</h3>
+        @endforeach
+        @endif
     <div class="row">
         <table id="example" class="display" style="width:100%">
             <thead>
@@ -13,7 +24,7 @@
                     <th>Payment Method</th>
                     <th>Payment Date(Y-M-D)</th>
                     <th>Payment Amount</th>
-                    <th>Due</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,9 +56,12 @@
                                 
                         @endswitch
                     </td>
-                    <td>{{ date('Y-M-d', strtotime($payment->pay_date)) }}</td>
+                    <td>{{ date('Y-M-d', strtotime($payment->created_at)) }}</td>
                     <td>{{ $payment->pay_amount }}</td>
-                    <td>{{ $payment->due }}</td>
+                    <td>
+                        <a href="{{ route('payment_edit',$payment->id) }}"> <span class="glyphicon glyphicon-edit" title="Edit Customer"></span> </a>
+                        || <a href="{{ route('payment_delete',$payment->id) }}" onclick="return confirm('Are You Sure To Delete !')"> <span class="glyphicon glyphicon-trash" title="Delete Customer"></span> </a>
+                </td>
                 </tr>
 
                 @endforeach

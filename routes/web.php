@@ -35,7 +35,7 @@ Route::get('/', function () {
 
  Route::get('/admin/customer/search/customer','CustomerController@search')->name("search");
 
-
+Route::get('/admin/customer/download/customer_data','CustomerController@customer_data')->name('download_pdf');
 //Customer End ********************************
 
 
@@ -55,7 +55,11 @@ Route::get('/admin/payment/create','PaymentController@create')->name('payment_cr
 
 Route::post('/admin/payment/post','PaymentController@store')->name('payment_save');
 
-Route::get('/admin/payment/view/{id}','PaymentController@show')->name('payment_view');
+Route::get('/admin/payment/edit/{id}','PaymentController@edit')->name('payment_edit');
+
+Route::post('/admin/payment/update','PaymentController@update')->name('payment_update');
+
+Route::get('/admin/payment/delete/{id}','PaymentController@destroy')->name('payment_delete');
 
 
 //Payment End ********************************
@@ -80,6 +84,25 @@ Route::post('/admin/router/save','RoterController@store')->name('router_save');
 
 //Router End **********************************
 
+
+// Analysis Start *************************************
+Route::get('/admin/analysis/reports','AnalysisController@index')->name('analysis_index'); 
+Route::get('/admin/analysis/graphical','AnalysisController@graphical_reports')->name('analysis_graphical'); 
+Route::post('/admin/analysis/monthly/transcition','AnalysisController@monthly_report')->name('analysis_monthly_transcition'); 
+
+
+// Analysis End *************************************
+
+// SendSmsController  Start *************************************
+Route::get('/admin/sendSMS/individual','SendSmsController@send_sms')->name('sms_individual'); 
+
+Route::post('/admin/sendSMS/individual/send','SendSmsController@send_sms_post')->name('sms_individual_send'); 
+
+Route::get('/admin/sendSMS/allUser','SendSmsController@send_sms_all')->name('send_sms_all'); 
+
+Route::get('/admin/downloadPhone/allUser','SendSmsController@download_all')->name('download_all'); 
+
+// SendSmsController  End *************************************
 
 Auth::routes();
 

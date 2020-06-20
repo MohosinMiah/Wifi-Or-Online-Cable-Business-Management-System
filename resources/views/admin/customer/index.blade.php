@@ -21,7 +21,6 @@
                     <th>Register Date(Y-M-D) </th>
                     <th>Expaire Date</th>
                     <th>Payment Status</th>
-                    <th>Due Amount </th>
                     @if (Auth::user()->roll == 3)
                         
                     
@@ -63,9 +62,9 @@
                     <td>{{ $customer->reg_date }}</td>
                     <td>
                         <?php  
-                          $expairedate = Payment::orderBy('id','desc')->where('cust_id',$customer->id)->first();
-                          if(!empty($expairedate)){
-                              echo $expairedate['expir_date'];
+                          $payment = Payment::orderBy('id','desc')->where('cust_id',$customer->id)->first();
+                          if(!empty($payment)){
+                              echo $payment['expir_date'];
   
                           }else{
                              echo  $customer->expaire_date;
@@ -75,9 +74,10 @@
   
                       <td>
                         <?php  
-                          $status = Payment::orderBy('id','desc')->where('cust_id',$customer->id)->first();
-                          if(!empty($status)){
-                              switch($status['status']){
+                          if(!empty($payment)){
+                             // var_dump($payment['status']);
+                               //die();
+                              switch($payment['status']){
                                   case 1: 
                                   echo "<p class='badge badge-success' style='background-color:green'>Active</p>";
                                   break;
@@ -98,24 +98,7 @@
                           }
                      ?>
                       </td>
-                      <td>
-                        <?php  
-                          $due = Payment::orderBy('id','desc')->where('cust_id',$customer->id)->first();
-                          if(!empty($due)){
-                              echo $due['due'];
-  
-                          }else{
-                            $mytime2 = Carbon::now();
-                            $current_date2 =  date('Y-m-d', strtotime($mytime2));
-                            if($customer->expaire_date > $current_date2){
-                                echo "0";
-                            }else{
-                                echo $customer->monthly_bill;
-                            }
-
-                          }
-                     ?>
-                      </td>
+                     
                       @if (Auth::user()->roll == 3)
 
                     <td>

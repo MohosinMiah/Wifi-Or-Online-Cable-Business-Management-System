@@ -54,6 +54,24 @@
                           <li><a href="{{ route('router_list') }}">Router List</a></li>
                         </ul>
                       </li>
+
+                      @if (Auth::user()->roll == 3)
+                      <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">Analysis Settings <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                          <li><a href="{{ route('analysis_index') }}">Reports</a></li>
+                          <li><a href="{{ route('analysis_graphical') }}">Graphical Reports</a></li>
+                        </ul>
+                      </li>
+                      @endif 
+
+
+                      <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">SMS Settings <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                          <li><a href="{{ route('sms_individual') }}">Send SMS Individual User</a></li>
+                          <li><a href="{{ route('send_sms_all') }}">Send SMS All User</a></li>
+                        </ul>
+                      </li>
+
                       @if (Auth::user()->roll == 3)
                           
                       
@@ -142,5 +160,7 @@
         
       })
   </script>
+  @yield('javascript')
+
 </body>
 </html>

@@ -49,6 +49,7 @@ class PaymentController extends Controller
 
     // }
     // die();
+    
 
         return view('admin.payment.index',compact('payments'));
     }
@@ -124,7 +125,7 @@ public function monthly_report(Request $request){
          */
         if ($v->fails()) {
      
-            \Session::flash('message', 'Fail To Save  Data.Please check error messages ....... ');
+            \Session::flash('message', 'Please check error messages ....... ');
             return redirect()->back()->withInput()->withErrors($v);
         }else{
             $search_date = $request->search;
@@ -163,7 +164,8 @@ return view('admin.payment.indexMonthly',compact('reports','search_date'));
         $nMonths = 1; // choose how many months you want to move ahead
 
         if(!empty($payment)){
-            $payment_date = $this->endCycle($payment->expir_date, $nMonths);
+            // $payment_date = $this->endCycle($payment->expir_date, $nMonths);
+            $payment_date = $payment->expir_date;
 
         }else{
             $payment_date = $customer->expaire_date;
@@ -171,10 +173,13 @@ return view('admin.payment.indexMonthly',compact('reports','search_date'));
 
 
         $payment_amount = $customer->monthly_bill;
+
+        $expaire_date = $this->endCycle($payment_date, $nMonths);
        
         $data  = array(       
             'payment_date' => $payment_date,       
-            'payment_amount' => $payment_amount,       
+            'payment_amount' => $payment_amount,   
+            'expaire_date' => $expaire_date,    
           );
 
     
@@ -283,7 +288,8 @@ return view('admin.payment.indexMonthly',compact('reports','search_date'));
      */
     public function edit($id)
     {
-        //
+         $payment = Payment::findOrfail($id);
+        return view('admin.payment.edit',compact('payment'));
     }
 
     /**
@@ -293,9 +299,85 @@ return view('admin.payment.indexMonthly',compact('reports','search_date'));
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        //Update Data
+        /**
+         *  Data  Validation.....
+         */
+        $v = Validator::make($request->all(), [
+            'cust_id' => 'required',
+            'pay_date' => 'required',
+            'pay_amount' => 'required',
+            'payment_method' => 'required',
+            'status' => 'required',
+          
+        ]);
+        /**
+         * Get Data From User Input
+         */
+       $id = $request->id;
+       $cust_id = $request->cust_id;
+        
+        $findDueAmount = Customer::where('id',$cust_id)->first();
+
+        // return  $findDueAmount->monthly_bill;
+        // var_dump($id);
+        // var_dump($findDueAmount);
+
+        // die();
+
+        // $staf_id = Auth::user()->id;
+        $staf_id = 1;
+        $pay_date = $request->input('pay_date');
+        $pay_amount = $request->input('pay_amount');
+        $payment_method = $request->input('payment_method');
+        $status = $request->input('status');
+        $note = $request->input('note');
+        $expaire_date = $nMonths = 1; // choose how many months you want to move ahead
+        $final = $this->endCycle($pay_date, $nMonths);
+        if($pay_amount < $findDueAmount->monthly_bill ){
+            \Session::flash('message', 'Payment Amount Is Less then Monthly Bill . It should be equal  ....... ');
+            return redirect()->back()->withInput()->withErrors($v);
+        }elseif($pay_amount > $findDueAmount->monthly_bill ){
+            \Session::flash('message', 'Payment Amount Is greater then Monthly Bill . It should be equal  ....... ');
+            return redirect()->back()->withInput()->withErrors($v);
+        }else{
+            $due =  $findDueAmount->monthly_bill - $pay_amount;
+
+        }
+        $report_date = date('Y-m',strtotime($pay_date));
+
+        /**
+         * Check Data is Valid or Not
+         */
+        if ($v->fails()) {
+     
+            \Session::flash('message', 'Fail To Update  Data.Please check error messages ....... ');
+            return redirect()->back()->withInput()->withErrors($v);
+        } else {
+            // route(View Path Address or Location)
+            // return redirect()->route('galary.index');
+           
+                DB::table($this->table)->where('id',$id)->update(
+                    [
+                        'cust_id' => $cust_id,
+                        'staf_id' => $staf_id,
+                        'pay_date' => $pay_date,
+                        'report_date' => $report_date,
+                        'expir_date' => $final,
+                        'pay_amount' => $pay_amount,
+                        'due' => $due,
+                        'status' => $status,
+                        'payment_method' => $payment_method,
+                        'note' => $note,
+                    ]
+                );
+             
+           
+            \Session::flash('message', 'Data Update Successfully ....... ');
+            return redirect('/admin/payment/edit/'.$id);
+        }
     }
 
     /**
@@ -306,7 +388,9 @@ return view('admin.payment.indexMonthly',compact('reports','search_date'));
      */
     public function destroy($id)
     {
-        //
+        $delete = Payment::destroy($id);
+        \Session::flash('message', 'Delete Data Successfully ....... ');
+        return back();
     }
 }
 

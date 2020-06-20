@@ -9,7 +9,7 @@ use App\Payment;
     <div class="row">
           <div class="jumbotron">
               <h1 class="text-center text-info">Monthly Report</h1>
-              <h2 class="text-center text-success ">Search Payment Based On Year , Month and Date </h2>
+              <h2 class="text-center text-success ">Search Payment Based On Month  </h2>
               <br>
               <hr>
               <br>

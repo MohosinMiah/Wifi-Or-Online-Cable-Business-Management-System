@@ -92,18 +92,23 @@ echo $expaire->expir_date;
           <h3> Billing Address   : {{ $customer->bill_address }} </h3>
           <hr>
 
-          <h3> Router ID    : {{ $customer->router_id }} </h3>
+          <h3> Router ID    : {{ $customer->router_id > 0 ? $customer->router_id : "Not Buy"  }} </h3>
           <hr>
 
           <h3> Short Note   : {{ $customer->note }} </h3>
           <hr>
 
-          <h3> Payment History </h3>
+         <div style="margin:10px;border:2px;background-color:white;padding:10px;">
+          <h3> Payment History :  </h3>
           @foreach ($payments as $payment)
-              <h4>{{ $payment->pay_date }}</h4>
+          <hr>
+              <h4 class="text text-info" style="margin:1px;padding:2px;">{{ $payment->pay_date }}</h4>
+           
+              <hr>
           @endforeach
          
           <hr>
+         </div>
  
   @else
       
